@@ -3,7 +3,7 @@ library(tidyverse)
 library(vote)
 
 
-#map graphics
+#maps graphics
 pdx_gen <- st_read(
   "Multnomah_Elections_Precinct_Split_2024/Multnomah_Elections_Precinct_Split_2024.shp")
 
