@@ -34,4 +34,25 @@ Access to individual ballot records gives us unique research opportunities. A fe
 
 This report from the [Data and Democracy Lab at the University of Chicago](https://mggg.org/portland-stv-24) investigates other questions and could inspire your own investigation. In the coming days I'll expand on these ideas and suggest some techniques, including links to US Census data and GIS packages available in R.
 
-irm 4/6/2026
+Project Deliverables and Ideas: Applying Data Science to CVR Voting
+
+More broadly, CVR data is unusually rich because of the individual level ballot content.
+
+1.  CVR data can help address questions about political strategy in a ranked choice voting system. For example, does a campaign to reject ranking a particular candidate diminish that candidate's performance?\
+    \
+    In Portland, a prominent mayoral candidate, Rene Gonzales, was the target of a "don't rank" rampaign, along with a handful of city counci candidates. Did those candidates appear on fewer ballots, and can we see endorsed candidates combine successfully into electoral blocs? \
+2.  Were candidates supported by electoral minorities more successful than they would have been had their support come from smaller geographic areas within council districts?\
+3.  We can see the results of individual ballots for multiple city races. Specifically, we can connect ballot records of mayoral candidates to council races. Portland races are non-partisan, but did support for specific mayoral candidates match support for specific council candidates? \
+4.  The greatest data science opportunity is the ability to connect ballot content, and voring precincts, to GIS tools. We can connect precinct information to census block information using spatial joins that can analyze precinct characteristics to electoral outcomes. \
+    \
+    I wonder if the candidates endorsed by the DSA succeeded in areas with economic characteristics such as home ownership and income.
+
+The deliverables can include the following:
+
+A dashboard that regenerates ranked choice voting results for specific subsets of the city and council districts, and depicts maps that show results.
+
+A dashboard that generates results of candidates associated with DSA endorsement blocs, and more generally, effect of moving specific candidates out of the candidate lists.
+
+The effect of using ballot information in alternative forms of voting, such as simple plurality voting, approval voting, and Condorcet voting (all of which we can explain in our early meetings).
+
+irm 4/13/2026
