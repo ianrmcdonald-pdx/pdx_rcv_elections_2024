@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>STV Recap</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="STV Example_files/libs/clipboard/clipboard.min.js"></script>
+<script src="STV Example_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="STV Example_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="STV Example_files/libs/quarto-html/popper.min.js"></script>
+<script src="STV Example_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="STV Example_files/libs/quarto-html/anchor.min.js"></script>
+<link href="STV Example_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="STV Example_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="STV Example_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="STV Example_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="STV Example_files/libs/bootstrap/bootstrap-8ffd5f67044e5306d9846f29df41dda5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#single-transferable-voting-in-portland" id="toc-single-transferable-voting-in-portland" class="nav-link active" data-scroll-target="#single-transferable-voting-in-portland">Single Transferable Voting in Portland</a></li>
+  <li><a href="#calculating-votes-from-stv-ballots." id="toc-calculating-votes-from-stv-ballots." class="nav-link" data-scroll-target="#calculating-votes-from-stv-ballots.">Calculating votes from stv ballots.</a></li>
+  <li><a href="#examples-of-good-ballots" id="toc-examples-of-good-ballots" class="nav-link" data-scroll-target="#examples-of-good-ballots">Examples of good ballots</a></li>
+  <li><a href="#mistake-1-undervotes-out-of-sequence" id="toc-mistake-1-undervotes-out-of-sequence" class="nav-link" data-scroll-target="#mistake-1-undervotes-out-of-sequence">Mistake #1: Undervotes out of sequence</a></li>
+  <li><a href="#mistake-2-overvotes" id="toc-mistake-2-overvotes" class="nav-link" data-scroll-target="#mistake-2-overvotes">Mistake #2: Overvotes</a></li>
+  <li><a href="#mistake-3-different-rankings-for-the-same-candidate" id="toc-mistake-3-different-rankings-for-the-same-candidate" class="nav-link" data-scroll-target="#mistake-3-different-rankings-for-the-same-candidate">Mistake #3: Different rankings for the same candidate</a></li>
+  <li><a href="#the-basic-stv-workflow" id="toc-the-basic-stv-workflow" class="nav-link" data-scroll-target="#the-basic-stv-workflow">The Basic STV Workflow</a>
+  <ul class="collapse">
+  <li><a href="#step-1-use-the-pivot-longer-function" id="toc-step-1-use-the-pivot-longer-function" class="nav-link" data-scroll-target="#step-1-use-the-pivot-longer-function">Step 1: Use the pivot longer function,</a></li>
+  <li><a href="#step-2-eliminate-choices-that-are-undervotes-or-overvotes." id="toc-step-2-eliminate-choices-that-are-undervotes-or-overvotes." class="nav-link" data-scroll-target="#step-2-eliminate-choices-that-are-undervotes-or-overvotes.">Step 2: Eliminate choices that are undervotes or overvotes.</a></li>
+  <li><a href="#step-3-eliminate-duplicate-choices-with-different-rankings." id="toc-step-3-eliminate-duplicate-choices-with-different-rankings." class="nav-link" data-scroll-target="#step-3-eliminate-duplicate-choices-with-different-rankings.">Step 3: Eliminate duplicate choices with different rankings.</a></li>
+  <li><a href="#step-4-consolidate-rankings-and-eliminate-gaps" id="toc-step-4-consolidate-rankings-and-eliminate-gaps" class="nav-link" data-scroll-target="#step-4-consolidate-rankings-and-eliminate-gaps">Step 4: Consolidate rankings and eliminate gaps</a></li>
+  <li><a href="#step-5-return-to-the-original-format-with-a-rank_1-rank_2-etc.-column-for-each-ranking." id="toc-step-5-return-to-the-original-format-with-a-rank_1-rank_2-etc.-column-for-each-ranking." class="nav-link" data-scroll-target="#step-5-return-to-the-original-format-with-a-rank_1-rank_2-etc.-column-for-each-ranking.">Step 5: Return to the original format with a rank_1, rank_2, etc. column for each ranking.</a></li>
+  <li><a href="#step-6-tally-the-accepted-ballots-by-the-first-ranking-using-the-rank_1-variable" id="toc-step-6-tally-the-accepted-ballots-by-the-first-ranking-using-the-rank_1-variable" class="nav-link" data-scroll-target="#step-6-tally-the-accepted-ballots-by-the-first-ranking-using-the-rank_1-variable">Step 6: Tally the accepted ballots by the first ranking (using the rank_1 variable)</a></li>
+  <li><a href="#step-7-compute-the-electoral-threshold" id="toc-step-7-compute-the-electoral-threshold" class="nav-link" data-scroll-target="#step-7-compute-the-electoral-threshold">Step 7: Compute the electoral threshold</a></li>
+  <li><a href="#step-8-determine-if-any-candidate-in-the-vote-tally-exceeds-the-threshold." id="toc-step-8-determine-if-any-candidate-in-the-vote-tally-exceeds-the-threshold." class="nav-link" data-scroll-target="#step-8-determine-if-any-candidate-in-the-vote-tally-exceeds-the-threshold.">Step 8: Determine if any candidate in the vote tally exceeds the threshold.</a></li>
+  <li><a href="#step-9-if-there-are-no-winners-eliminate-the-candidate-with-the-fewest-first-place-votes." id="toc-step-9-if-there-are-no-winners-eliminate-the-candidate-with-the-fewest-first-place-votes." class="nav-link" data-scroll-target="#step-9-if-there-are-no-winners-eliminate-the-candidate-with-the-fewest-first-place-votes.">Step 9: If there are no winners, eliminate the candidate with the fewest first place votes.</a></li>
+  <li><a href="#step-10-run-another-round-after-filtering-the-eliminating-candidate" id="toc-step-10-run-another-round-after-filtering-the-eliminating-candidate" class="nav-link" data-scroll-target="#step-10-run-another-round-after-filtering-the-eliminating-candidate">Step 10: Run another round after filtering the eliminating candidate</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">STV Recap</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="single-transferable-voting-in-portland" class="level2">
+<h2 class="anchored" data-anchor-id="single-transferable-voting-in-portland">Single Transferable Voting in Portland</h2>
+<p>STV elections are widely documented but here is a summary that does two things:</p>
+<ol type="1">
+<li><p>Shows a step by step calculation using R, and</p></li>
+<li><p>Uses data from an actual Portland election, instead of a toy example. You can validate the results with an actual CVR dataset.</p></li>
+</ol>
+<p>The example uses the 3rd District City Council race from 2024.</p>
+</section>
+<section id="calculating-votes-from-stv-ballots." class="level2">
+<h2 class="anchored" data-anchor-id="calculating-votes-from-stv-ballots.">Calculating votes from stv ballots.</h2>
+<p>Voters select from 1 to 6 candidates on their ballots in rank order of preference. Each Portland race listed approximately 30 candidates, and write-ins are allowed. The 2024 city council elections were the first under the new charter reforms, meaning all 12 seats was open and included in the election.</p>
+<p>Voters were advised to omit any candidates that they reject outright. Any ranking expresses a willingness to accept a candidate, but the higher the ranking, the stronger the ballot’s effect.</p>
+<p>Ballots display a seven column grid; they list all of the candidates and offer ranking slots from 1 to 6. Voters are expected to mark only one candidate per ranking, and to rank them in order from highest to lowest, but ballots are not rejected outright for a single mistake.</p>
+<p>We use the term <em>undervote</em> to describe a choice that isn’t marked. If a voter omits a selection for a particular ranking, we have an undervote.</p>
+<p>An <em>overvote</em> means more than one candidate is selected for the same ranking.</p>
+</section>
+<section id="examples-of-good-ballots" class="level2">
+<h2 class="anchored" data-anchor-id="examples-of-good-ballots">Examples of good ballots</h2>
+<p>Some voters mark their ballots from 1-6 correctly, with candidates for all six rankings.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t</span>(council_d3_2024[<span class="dv">22</span>,])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]                 
+recordID "RCV-0001+10245"     
+precinct "12"                 
+rank_1   "Kezia Wanner"       
+rank_2   "Tiffany Koyama Lane"
+rank_3   "Jesse Cornett"      
+rank_4   "Dan Gilk"           
+rank_5   "Sandeep Bali"       
+rank_6   "Daniel DeMelo"      </code></pre>
+</div>
+</div>
+<p>Some voters don’t use all six rankings, but are still valid. A blank ranking appears in the CVR as an undervote</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t</span>(council_d3_2024[<span class="dv">26</span>,])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]                     
+recordID "RCV-0001+10349"         
+precinct "71"                     
+rank_1   "Rex Burkholder"         
+rank_2   "Matthew (Matt) Anderson"
+rank_3   "Brian Conley"           
+rank_4   "Steve Novick"           
+rank_5   "Jaclyn Smith-Moore"     
+rank_6   "undervote"              </code></pre>
+</div>
+</div>
+<p>Three kinds of voter mistakes are relatively frequent. Portland handles them in different ways, none of which leads to an outright rejection.</p>
+</section>
+<section id="mistake-1-undervotes-out-of-sequence" class="level2">
+<h2 class="anchored" data-anchor-id="mistake-1-undervotes-out-of-sequence">Mistake #1: Undervotes out of sequence</h2>
+<p>Some ballots leave some rankings blank within a set of ranked candidates,</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t</span>(council_d3_2024[<span class="dv">5296</span>,])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]                
+recordID "RCV-0088+10243"    
+precinct "55"                
+rank_1   "undervote"         
+rank_2   "Philippe Knab"     
+rank_3   "Cristal Azul Otero"
+rank_4   "Rex Burkholder"    
+rank_5   "Angelita Morillo"  
+rank_6   "undervote"         </code></pre>
+</div>
+</div>
+<p>In this case, Philippe Knab was the voters most preferred choice but the voter marked him in the second ranking. Portland accepts this ballot and compresses the rankings. Knab receives a rank_1, Otero a rank_2, Burholder is rank_3, and Morillo is rank 4. Ranks 5 and 6 become undervotes.</p>
+<p>Some jurisdictions are less generous, but Portland will use any information that generates a reasonable inference of the desired ranking.</p>
+</section>
+<section id="mistake-2-overvotes" class="level2">
+<h2 class="anchored" data-anchor-id="mistake-2-overvotes">Mistake #2: Overvotes</h2>
+<p>A more serious error occurs when a voter assigns the same ranking to multiple candidates. We can’t infer the voters actual preference for those rankings and the ranking must be ignored. The ballot is still accepted for choices with a single correctly stated preference. For example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>council_d3_2024[<span class="dv">127</span>,] <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.tibble</span>(<span class="at">rownames =</span> <span class="st">"name"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">V1 =</span> <span class="fu">str_replace_all</span>(V1, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">", "</span> ))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 2
+  name     V1                                                           
+  &lt;chr&gt;    &lt;chr&gt;                                                        
+1 recordID RCV-0008+10357                                               
+2 precinct 12                                                           
+3 rank_1   Sandeep Bali, Steve Novick, Heart Free Pham, Angelita Morillo
+4 rank_2   undervote                                                    
+5 rank_3   undervote                                                    
+6 rank_4   undervote                                                    
+7 rank_5   undervote                                                    
+8 rank_6   undervote                                                    </code></pre>
+</div>
+</div>
+<p>The voter chose four candidates but assigned a rank_1 value to all four of them. The CVR delimits the candidates with a return control character appearing as “\n”, although I show the example with a comma delimiter. Since no other candidate was ranked alone in the other slots, the ballot is ignored.</p>
+<p>But if the voter had chosen single candidates in the other rankings, the ballot would have kept the correctly chosen candidates. Suppose Phillipe Knab had been chosen in rank_2. Knab would have taken the rank_1 spot on the ballot, even though Bali, Novice, Pham, and Morillo would have been dropped.</p>
+</section>
+<section id="mistake-3-different-rankings-for-the-same-candidate" class="level2">
+<h2 class="anchored" data-anchor-id="mistake-3-different-rankings-for-the-same-candidate">Mistake #3: Different rankings for the same candidate</h2>
+<p>In this ballot, a Steve Novick fan chose him for all six rankings. The ballot is accepted for the best ranking, but the duplicate rankings become undervotes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t</span>(council_d3_2024[<span class="dv">2697</span>,])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]            
+recordID "RCV-0047+10009"
+precinct "70"            
+rank_1   "Steve Novick"  
+rank_2   "Steve Novick"  
+rank_3   "Steve Novick"  
+rank_4   "Steve Novick"  
+rank_5   "Steve Novick"  
+rank_6   "Steve Novick"  </code></pre>
+</div>
+</div>
+</section>
+<section id="the-basic-stv-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="the-basic-stv-workflow">The Basic STV Workflow</h2>
+<p>Once the rankings have been compressed and overvotes eliminated.</p>
+<p>Step 1: Determine the number of votes required to win election. For an ordinary race with one winner, the threshold is 50% + 1. For multiple seats, the threshold is lower.</p>
+<p>The formula that determines the threshold percentage is: 1 / (1 + number of seats) + 1. For Portland City Council races, this means 25% + 1.</p>
+<p>The lower percentage ensures that three winners, and only three winners, will emerge. It also means that diverse representation of minority policy preferenes is more likely.</p>
+<p>Use one of the five 8-column data tables provided in the process_cvr_objects.RData file. They are named council_d1_2024, council_d2_2024, council_d3_2024, council_d4_2024, and mayor_2024.</p>
+<p>As noted elsewhere, each table has 8 columns, including:</p>
+<ul>
+<li><p>recordID and precinct. When combined they uniquely identify each ballot</p></li>
+<li><p>rank_1, rank_2, …., rank_6, containing candidate names</p></li>
+</ul>
+<p>Note that ehe stv() function in the vote package requires a different format, where each candidate is a column and the rankings appear in the body of the data table. The tables with the word “preprocessed” use that format, In this example, I’ll use the eight column format.</p>
+<p>We’ll work with the council_d3_2024 table, but you can replace or subset this routine.</p>
+<section id="step-1-use-the-pivot-longer-function" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-use-the-pivot-longer-function">Step 1: Use the pivot longer function,</h3>
+<p>This step creates a long table with a single variable for each ranking.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ballot_data <span class="ot">&lt;-</span> council_d3_2024 <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">!</span><span class="fu">c</span>(recordID, precinct), </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">names_to =</span> <span class="st">"choice_num"</span>, <span class="at">values_to =</span> <span class="st">"choice"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">choice_num =</span> <span class="fu">as.numeric</span>(<span class="fu">str_sub</span>(choice_num, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>)))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>ballot_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 510,690 × 4
+   recordID       precinct choice_num choice             
+   &lt;chr&gt;             &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;              
+ 1 RCV-0001+10003       26          1 Rex Burkholder     
+ 2 RCV-0001+10003       26          2 Philippe Knab      
+ 3 RCV-0001+10003       26          3 undervote          
+ 4 RCV-0001+10003       26          4 undervote          
+ 5 RCV-0001+10003       26          5 undervote          
+ 6 RCV-0001+10003       26          6 undervote          
+ 7 RCV-0001+10015       71          1 Tiffany Koyama Lane
+ 8 RCV-0001+10015       71          2 Rex Burkholder     
+ 9 RCV-0001+10015       71          3 Angelita Morillo   
+10 RCV-0001+10015       71          4 Jesse Cornett      
+# ℹ 510,680 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="step-2-eliminate-choices-that-are-undervotes-or-overvotes." class="level3">
+<h3 class="anchored" data-anchor-id="step-2-eliminate-choices-that-are-undervotes-or-overvotes.">Step 2: Eliminate choices that are undervotes or overvotes.</h3>
+<p>In the Portland files, overvotes all have a “” newline control character.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ballot_data <span class="ot">&lt;-</span> ballot_data <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(choice <span class="sc">!=</span> <span class="st">"undervote"</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">str_detect</span>(choice, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>ballot_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 388,581 × 4
+   recordID       precinct choice_num choice             
+   &lt;chr&gt;             &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;              
+ 1 RCV-0001+10003       26          1 Rex Burkholder     
+ 2 RCV-0001+10003       26          2 Philippe Knab      
+ 3 RCV-0001+10015       71          1 Tiffany Koyama Lane
+ 4 RCV-0001+10015       71          2 Rex Burkholder     
+ 5 RCV-0001+10015       71          3 Angelita Morillo   
+ 6 RCV-0001+10015       71          4 Jesse Cornett      
+ 7 RCV-0001+10015       71          5 Theo Hathaway Saner
+ 8 RCV-0001+10015       71          6 Cristal Azul Otero 
+ 9 RCV-0001+10053       21          1 Angelita Morillo   
+10 RCV-0001+10053       21          2 Tiffany Koyama Lane
+# ℹ 388,571 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="step-3-eliminate-duplicate-choices-with-different-rankings." class="level3">
+<h3 class="anchored" data-anchor-id="step-3-eliminate-duplicate-choices-with-different-rankings.">Step 3: Eliminate duplicate choices with different rankings.</h3>
+<p>In this example, I use the slice_min() function, which works but performs a bit slowly in this example.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ballot_data <span class="ot">&lt;-</span> ballot_data <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(recordID, precinct, choice) <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">slice_min</span>(choice_num, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>ballot_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 387,465 × 4
+   recordID       precinct choice_num choice             
+   &lt;chr&gt;             &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;              
+ 1 RCV-0001+10003       26          2 Philippe Knab      
+ 2 RCV-0001+10003       26          1 Rex Burkholder     
+ 3 RCV-0001+10015       71          3 Angelita Morillo   
+ 4 RCV-0001+10015       71          6 Cristal Azul Otero 
+ 5 RCV-0001+10015       71          4 Jesse Cornett      
+ 6 RCV-0001+10015       71          2 Rex Burkholder     
+ 7 RCV-0001+10015       71          5 Theo Hathaway Saner
+ 8 RCV-0001+10015       71          1 Tiffany Koyama Lane
+ 9 RCV-0001+10053       21          1 Angelita Morillo   
+10 RCV-0001+10053       21          4 Rex Burkholder     
+# ℹ 387,455 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="step-4-consolidate-rankings-and-eliminate-gaps" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-consolidate-rankings-and-eliminate-gaps">Step 4: Consolidate rankings and eliminate gaps</h3>
+<p>This step fixes mistake #3</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ballot_data <span class="ot">&lt;-</span> ballot_data <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(recordID, precinct) <span class="sc">|&gt;</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">choice_num =</span> <span class="fu">rank</span>(choice_num)) <span class="sc">|&gt;</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>ballot_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 387,465 × 4
+   recordID       precinct choice_num choice             
+   &lt;chr&gt;             &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;              
+ 1 RCV-0001+10003       26          2 Philippe Knab      
+ 2 RCV-0001+10003       26          1 Rex Burkholder     
+ 3 RCV-0001+10015       71          3 Angelita Morillo   
+ 4 RCV-0001+10015       71          6 Cristal Azul Otero 
+ 5 RCV-0001+10015       71          4 Jesse Cornett      
+ 6 RCV-0001+10015       71          2 Rex Burkholder     
+ 7 RCV-0001+10015       71          5 Theo Hathaway Saner
+ 8 RCV-0001+10015       71          1 Tiffany Koyama Lane
+ 9 RCV-0001+10053       21          1 Angelita Morillo   
+10 RCV-0001+10053       21          4 Rex Burkholder     
+# ℹ 387,455 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="step-5-return-to-the-original-format-with-a-rank_1-rank_2-etc.-column-for-each-ranking." class="level3">
+<h3 class="anchored" data-anchor-id="step-5-return-to-the-original-format-with-a-rank_1-rank_2-etc.-column-for-each-ranking.">Step 5: Return to the original format with a rank_1, rank_2, etc. column for each ranking.</h3>
+<p>The relocate function reorders the columns properly.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ballot_data <span class="ot">&lt;-</span> ballot_data <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(<span class="st">"recordID"</span>, <span class="st">"precinct"</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">names_from =</span> choice_num,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">values_from =</span> choice) <span class="sc">|&gt;</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">relocate</span>(recordID, precinct, <span class="at">rank_1 =</span> <span class="st">`</span><span class="at">1</span><span class="st">`</span>, <span class="at">rank_2 =</span> <span class="st">`</span><span class="at">2</span><span class="st">`</span>, <span class="at">rank_3 =</span> <span class="st">`</span><span class="at">3</span><span class="st">`</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">rank_4 =</span> <span class="st">`</span><span class="at">4</span><span class="st">`</span>, <span class="at">rank_5 =</span> <span class="st">`</span><span class="at">5</span><span class="st">`</span>, <span class="at">rank_6 =</span> <span class="st">`</span><span class="at">6</span><span class="st">`</span>) </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>ballot_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 84,566 × 8
+   recordID       precinct rank_1             rank_2 rank_3 rank_4 rank_5 rank_6
+   &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;              &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
+ 1 RCV-0001+10003       26 Rex Burkholder     Phili… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 2 RCV-0001+10015       71 Tiffany Koyama La… Rex B… Angel… Jesse… Theo … Crist…
+ 3 RCV-0001+10053       21 Angelita Morillo   Tiffa… Steve… Rex B… &lt;NA&gt;   &lt;NA&gt;  
+ 4 RCV-0001+10057       68 David O'Connor     Terry… Harri… John … &lt;NA&gt;   &lt;NA&gt;  
+ 5 RCV-0001+10059       26 Angelita Morillo   Tiffa… Ahlam… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 6 RCV-0001+10063       26 Rex Burkholder     Phili… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 7 RCV-0001+10075       45 Steve Novick       Terry… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 8 RCV-0001+10077       71 Angelita Morillo   Tiffa… Steve… Kezia… Danie… &lt;NA&gt;  
+ 9 RCV-0001+10089       40 Christopher Brumm… David… Steve… Terry… Jesse… Cliff…
+10 RCV-0001+10091       70 Dan Gilk           Jonat… Brian… Theo … Chris… Tiffa…
+# ℹ 84,556 more rows</code></pre>
+</div>
+</div>
+<p>The three mistakes described above have been cleaned up. We can start counting the ballots.</p>
+</section>
+<section id="step-6-tally-the-accepted-ballots-by-the-first-ranking-using-the-rank_1-variable" class="level3">
+<h3 class="anchored" data-anchor-id="step-6-tally-the-accepted-ballots-by-the-first-ranking-using-the-rank_1-variable">Step 6: Tally the accepted ballots by the first ranking (using the rank_1 variable)</h3>
+<p>In this example, we see 84,566 ballots. Notice that 34 candidate values appear; some of these values are certified write-in’s whose names do not appear.</p>
+<p>You can start comparing these results with the county’s official results and the summary_council_d4 table. <a href="portland%20city%20council%202024%20election%20district%203%20official%20results">There are some small differences</a>. The official published results imply 84,512 ballots, with a threshold of 21,129. The 54 ballot difference is very close to a write-in value, and at some point, I would like to work out these differences with the data keepers. The stv() function in the vote package did generate consistent results.</p>
+<p>Steve Novick’s and Angelita Murillo’s results differ from the official result by 1; Tiffany Kayama Lane’s result matches the official result.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tally <span class="ot">&lt;-</span> ballot_data <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(rank_1, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>tally</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 34 × 2
+   rank_1                  n
+   &lt;chr&gt;               &lt;int&gt;
+ 1 Steve Novick        20456
+ 2 Angelita Morillo    16398
+ 3 Tiffany Koyama Lane 16320
+ 4 Kezia Wanner         5312
+ 5 Rex Burkholder       3949
+ 6 Jesse Cornett        3859
+ 7 Harrison Kass        2785
+ 8 Daniel DeMelo        1570
+ 9 Philippe Knab        1549
+10 Sandeep Bali         1407
+# ℹ 24 more rows</code></pre>
+</div>
+</div>
+<p>In this case, three candidates clearly emerge with strong results. Thanks to the logic of STV balloting, they can be dislodged unless they have surpassed the electoral threshold.</p>
+</section>
+<section id="step-7-compute-the-electoral-threshold" class="level3">
+<h3 class="anchored" data-anchor-id="step-7-compute-the-electoral-threshold">Step 7: Compute the electoral threshold</h3>
+<p>The ceiling() function comes from dplyr and simply. rounds up</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>threshold <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(<span class="fu">sum</span>(tally<span class="sc">$</span>n)<span class="sc">/</span><span class="dv">4</span> <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>threshold</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 21143</code></pre>
+</div>
+</div>
+</section>
+<section id="step-8-determine-if-any-candidate-in-the-vote-tally-exceeds-the-threshold." class="level3">
+<h3 class="anchored" data-anchor-id="step-8-determine-if-any-candidate-in-the-vote-tally-exceeds-the-threshold.">Step 8: Determine if any candidate in the vote tally exceeds the threshold.</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>winners <span class="ot">&lt;-</span> tally <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;=</span> threshold)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>winners</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 2
+# ℹ 2 variables: rank_1 &lt;chr&gt;, n &lt;int&gt;</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(winners) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"No winners this round"</span>) </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"We have at least one winner"</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "No winners this round"</code></pre>
+</div>
+</div>
+</section>
+<section id="step-9-if-there-are-no-winners-eliminate-the-candidate-with-the-fewest-first-place-votes." class="level3">
+<h3 class="anchored" data-anchor-id="step-9-if-there-are-no-winners-eliminate-the-candidate-with-the-fewest-first-place-votes.">Step 9: If there are no winners, eliminate the candidate with the fewest first place votes.</h3>
+<p>In this example, i take the bottom row of the presorted tally rather than look for the minimum value explicitly. Each system deals with ties differently; in the unlikely event that two or more eliminated candidates are tied, the elimination is chosen arbitrarily here, TBH: I’m not exactly sure how Portland handles that scenario, but I’m sure it’s documented somewhere.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>eliminated_candidate <span class="ot">&lt;-</span> tally[<span class="fu">nrow</span>(tally), <span class="dv">1</span>]</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>eliminated_candidate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  rank_1      
+  &lt;chr&gt;       
+1 Write-in-127</code></pre>
+</div>
+</div>
+</section>
+<section id="step-10-run-another-round-after-filtering-the-eliminating-candidate" class="level3">
+<h3 class="anchored" data-anchor-id="step-10-run-another-round-after-filtering-the-eliminating-candidate">Step 10: Run another round after filtering the eliminating candidate</h3>
+<p>We execute the compression logic one more time, and repeat until three candidates have crossed the threshold.</p>
+<p>A function (or even a recursive function) would make sense at this point.</p>
+<p>Almost all of the code shown here is reused…the filtering statement is the only differece.</p>
+<p>This code blocks run runs the code above beginning with step 6.</p>
+<p>Notice that logically automatically moves a voter’s highest remaining candidate into rank_1. Once all of a voter’s candidates are eliminated, the ballot is considered <strong>exhausted</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>ballot_data_round_2 <span class="ot">&lt;-</span> ballot_data <span class="sc">|&gt;</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">!</span><span class="fu">c</span>(recordID, precinct), </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">names_to =</span> <span class="st">"choice_num"</span>, <span class="at">values_to =</span> <span class="st">"choice"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">choice_num =</span> <span class="fu">as.numeric</span>(<span class="fu">str_sub</span>(choice_num, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(choice <span class="sc">!=</span> <span class="fu">as.character</span>(eliminated_candidate)) <span class="sc">|&gt;</span> </span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(recordID, precinct, choice) <span class="sc">|&gt;</span> </span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">slice_min</span>(choice_num, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(recordID, precinct) <span class="sc">|&gt;</span> </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">choice_num =</span> <span class="fu">rank</span>(choice_num)) <span class="sc">|&gt;</span> </span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(<span class="st">"recordID"</span>, <span class="st">"precinct"</span>),</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">names_from =</span> choice_num,</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">values_from =</span> choice) <span class="sc">|&gt;</span> </span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">relocate</span>(recordID, precinct, <span class="at">rank_1 =</span> <span class="st">`</span><span class="at">1</span><span class="st">`</span>, <span class="at">rank_2 =</span> <span class="st">`</span><span class="at">2</span><span class="st">`</span>, <span class="at">rank_3 =</span> <span class="st">`</span><span class="at">3</span><span class="st">`</span>,</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>           <span class="at">rank_4 =</span> <span class="st">`</span><span class="at">4</span><span class="st">`</span>, <span class="at">rank_5 =</span> <span class="st">`</span><span class="at">5</span><span class="st">`</span>, <span class="at">rank_6 =</span> <span class="st">`</span><span class="at">6</span><span class="st">`</span>) </span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>ballot_data_round_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 84,564 × 8
+   recordID       precinct rank_1             rank_2 rank_3 rank_4 rank_5 rank_6
+   &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;              &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
+ 1 RCV-0001+10003       26 Rex Burkholder     Phili… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 2 RCV-0001+10015       71 Tiffany Koyama La… Rex B… Angel… Jesse… Theo … Crist…
+ 3 RCV-0001+10053       21 Angelita Morillo   Tiffa… Steve… Rex B… &lt;NA&gt;   &lt;NA&gt;  
+ 4 RCV-0001+10057       68 David O'Connor     Terry… Harri… John … &lt;NA&gt;   &lt;NA&gt;  
+ 5 RCV-0001+10059       26 Angelita Morillo   Tiffa… Ahlam… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 6 RCV-0001+10063       26 Rex Burkholder     Phili… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 7 RCV-0001+10075       45 Steve Novick       Terry… &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
+ 8 RCV-0001+10077       71 Angelita Morillo   Tiffa… Steve… Kezia… Danie… &lt;NA&gt;  
+ 9 RCV-0001+10089       40 Christopher Brumm… David… Steve… Terry… Jesse… Cliff…
+10 RCV-0001+10091       70 Dan Gilk           Jonat… Brian… Theo … Chris… Tiffa…
+# ℹ 84,554 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>tally_round_2 <span class="ot">&lt;-</span> ballot_data_round_2 <span class="sc">|&gt;</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(rank_1, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>tally_round_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 33 × 2
+   rank_1                  n
+   &lt;chr&gt;               &lt;int&gt;
+ 1 Steve Novick        20456
+ 2 Angelita Morillo    16398
+ 3 Tiffany Koyama Lane 16320
+ 4 Kezia Wanner         5312
+ 5 Rex Burkholder       3950
+ 6 Jesse Cornett        3859
+ 7 Harrison Kass        2785
+ 8 Daniel DeMelo        1570
+ 9 Philippe Knab        1549
+10 Sandeep Bali         1407
+# ℹ 23 more rows</code></pre>
+</div>
+</div>
+<p>We have eliminated Write-in-127 and we should expect to see those voters’ second place choices adjust the totals appearing in tally_round_2. The tally above shows five ballots for Write-in-127 and the new tallies should reflect those ballots’ second place choices.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>eliminated_candidate_votes <span class="ot">&lt;-</span> ballot_data <span class="sc">|&gt;</span> </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(rank_1 <span class="sc">==</span> <span class="fu">as.character</span>(eliminated_candidate)) <span class="sc">|&gt;</span> </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(recordID, precinct, rank_1, rank_2) </span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>eliminated_candidate_votes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  recordID       precinct rank_1       rank_2        
+  &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;         
+1 RCV-0386+10529       12 Write-in-127 Write-in-126  
+2 RCV-0803+10575       51 Write-in-127 Rex Burkholder
+3 RCV-0981+10767       40 Write-in-127 &lt;NA&gt;          
+4 RCV-1098+10669       11 Write-in-127 Write-in-128  
+5 RCV-1115+10533       77 Write-in-127 &lt;NA&gt;          </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>eliminated_candidate_votes <span class="sc">|&gt;</span> <span class="fu">count</span>(rank_2, <span class="at">sort=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  rank_2             n
+  &lt;chr&gt;          &lt;int&gt;
+1 &lt;NA&gt;               2
+2 Rex Burkholder     1
+3 Write-in-126       1
+4 Write-in-128       1</code></pre>
+</div>
+</div>
+<p>We can see that two of the five ballots are blank NA’s in the rank_2 position; those ballots are now exhausted. The other three candidates should have one additional ballot.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

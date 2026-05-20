@@ -1,0 +1,317 @@
+---
+title: "STV Recap"
+editor: source
+format:
+  html:
+    toc: true
+theme: cosmo
+---
+
+## Single Transferable Voting in Portland
+
+STV elections are widely documented but here is a summary that does two things:
+
+1.  Shows a step by step calculation using R, and
+  
+2.  Uses data from an actual Portland election, instead of a toy example. You can validate the results with an actual CVR dataset.
+
+The example uses the 3rd District City Council race from 2024.
+
+## Calculating votes from stv ballots.
+
+Voters select from 1 to 6 candidates on their ballots in rank order of preference. Each Portland race listed approximately 30 candidates, and write-ins are allowed. The 2024 city council elections were the first under the new charter reforms, meaning all 12 seats was open and included in the election.
+
+Voters were advised to omit any candidates that they reject outright. Any ranking expresses a willingness to accept a candidate, but the higher the ranking, the stronger the ballot's effect.
+
+Ballots display a seven column grid; they list all of the candidates and offer ranking slots from 1 to 6. Voters are expected to mark only one candidate per ranking, and to rank them in order from highest to lowest, but ballots are not rejected outright for a single mistake.
+
+We use the term *undervote* to describe a choice that isn't marked.  If a voter omits a selection for a particular ranking, we have an undervote. 
+
+An *overvote* means more than one candidate is selected for the same ranking.
+
+## Examples of good ballots
+
+Some voters mark their ballots from 1-6 correctly, with candidates for all six rankings.
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+library(tidyverse)
+load("process_cvr_objects.RData")
+council_d3_2024 <- council_d3_2024 |> 
+  mutate(recordID = str_replace_all(recordID, "\"", ""))
+
+
+```
+
+```{r}
+t(council_d3_2024[22,])
+```
+
+Some voters don't use all six rankings, but are still valid. A blank ranking appears in the CVR as an undervote
+
+```{r}
+t(council_d3_2024[26,])
+
+```
+
+Three kinds of voter mistakes are relatively frequent. Portland handles them in different ways, none of which leads to an outright rejection.
+
+## Mistake #1: Undervotes out of sequence
+
+Some ballots leave some rankings blank within a set of ranked candidates,
+
+```{r}
+#| warning: false
+t(council_d3_2024[5296,])
+
+```
+
+In this case, Philippe Knab was the voters most preferred choice but the voter marked him in the second ranking. Portland accepts this ballot and compresses the rankings. Knab receives a rank_1, Otero a rank_2, Burholder is rank_3, and Morillo is rank 4. Ranks 5 and 6 become undervotes.
+
+Some jurisdictions are less generous, but Portland will use any information that generates a reasonable inference of the desired ranking.
+
+## Mistake #2: Overvotes
+
+A more serious error occurs when a voter assigns the same ranking to multiple candidates. We can't infer the voters actual preference for those rankings and the ranking must be ignored. The ballot is still accepted for choices with a single correctly stated preference. For example:
+
+```{r}
+#| warning: false
+
+council_d3_2024[127,] |> 
+  t() |> 
+    as.tibble(rownames = "name") |> 
+  mutate(V1 = str_replace_all(V1, "\n", ", " ))
+
+
+```
+
+The voter chose four candidates but assigned a rank_1 value to all four of them. The CVR delimits the candidates with a return control character appearing as "\\n", although I show the example with a comma delimiter. Since no other candidate was ranked alone in the other slots, the ballot is ignored.
+
+But if the voter had chosen single candidates in the other rankings, the ballot would have kept the correctly chosen candidates. Suppose Phillipe Knab had been chosen in rank_2. Knab would have taken the rank_1 spot on the ballot, even though Bali, Novice, Pham, and Morillo would have been dropped.
+
+## Mistake #3: Different rankings for the same candidate
+
+In this ballot, a Steve Novick fan chose him for all six rankings. The ballot is accepted for the best ranking, but the duplicate rankings become undervotes.
+
+```{r}
+t(council_d3_2024[2697,])
+```
+
+## The Basic STV Workflow
+
+Once the rankings have been compressed and overvotes eliminated.
+
+Step 1: Determine the number of votes required to win election. For an ordinary race with one winner, the threshold is 50% + 1. For multiple seats, the threshold is lower.
+
+The formula that determines the threshold percentage is: 1 / (1 + number of seats) + 1. For Portland City Council races, this means 25% + 1.
+
+The lower percentage ensures that three winners, and only three winners, will emerge. It also means that diverse representation of minority policy preferenes is more likely.
+
+Use one of the five 8-column data tables provided in the process_cvr_objects.RData file. They are named council_d1_2024, council_d2_2024, council_d3_2024, council_d4_2024, and mayor_2024.
+
+As noted elsewhere, each table has 8 columns, including:
+
+- recordID and precinct. When combined they uniquely identify each ballot
+
+- rank_1, rank_2, ...., rank_6, containing candidate names
+
+Note that ehe stv() function in the vote package requires a different format, where each candidate is a column and the rankings appear in the body of the data table. The tables with the word "preprocessed" use that format, In this example, I'll use the eight column format.
+
+We'll work with the council_d3_2024 table, but you can replace or subset this routine.
+
+### Step 1: Use the pivot longer function,
+
+This step creates a long table with a single variable for each ranking.
+
+```{r}
+
+ballot_data <- council_d3_2024 |> 
+pivot_longer(cols = !c(recordID, precinct), 
+              names_to = "choice_num", values_to = "choice") |> 
+mutate(choice_num = as.numeric(str_sub(choice_num, -1, -1)))
+
+ballot_data
+
+```
+
+### Step 2: Eliminate choices that are undervotes or overvotes.
+
+In the Portland files, overvotes all have a "\n" newline control character.
+
+```{r}
+
+ballot_data <- ballot_data |> 
+  filter(choice != "undervote" & !str_detect(choice, "\n"))
+
+ballot_data
+
+```
+
+### Step 3: Eliminate duplicate choices with different rankings. 
+
+In this example, I use the slice_min() function, which works but performs a bit slowly in this example.
+
+```{r}
+
+ballot_data <- ballot_data |> 
+    group_by(recordID, precinct, choice) |> 
+      slice_min(choice_num, with_ties = FALSE) |> 
+    ungroup() 
+
+ballot_data
+
+```
+
+### Step 4: Consolidate rankings and eliminate gaps
+
+This step fixes mistake #3
+
+```{r}
+    
+ballot_data <- ballot_data |> 
+  
+    group_by(recordID, precinct) |> 
+    mutate(choice_num = rank(choice_num)) |> 
+    ungroup()
+
+ballot_data
+  
+```
+
+### Step 5: Return to the original format with a rank_1, rank_2, etc. column for each ranking.
+
+The relocate function reorders the columns properly.
+
+```{r}
+ballot_data <- ballot_data |> 
+
+pivot_wider(id_cols = c("recordID", "precinct"),
+            names_from = choice_num,
+            values_from = choice) |> 
+  
+relocate(recordID, precinct, rank_1 = `1`, rank_2 = `2`, rank_3 = `3`,
+           rank_4 = `4`, rank_5 = `5`, rank_6 = `6`) 
+
+ballot_data
+```
+
+The three mistakes described above have been cleaned up. We can start counting the ballots.
+
+### Step 6: Tally the accepted ballots by the first ranking (using the rank_1 variable)
+
+In this example, we see 84,566 ballots. Notice that 34 candidate values appear; some of these values are certified write-in's whose names do not appear.
+
+You can start comparing these results with the county's official results and the summary_council_d4 table. [There are some small differences](portland%20city%20council%202024%20election%20district%203%20official%20results). The official published results imply 84,512 ballots, with a threshold of 21,129. The 54 ballot difference is very close to a write-in value, and at some point, I would like to work out these differences with the data keepers. The stv() function in the vote package did generate consistent results.
+
+Steve Novick's and Angelita Murillo's results differ from the official result by 1; Tiffany Kayama Lane's result matches the official result.
+
+```{r}
+
+tally <- ballot_data |> 
+    count(rank_1, sort = TRUE)
+
+tally
+
+```
+
+In this case, three candidates clearly emerge with strong results. Thanks to the logic of STV balloting, they can be dislodged unless they have surpassed the electoral threshold.
+
+### Step 7: Compute the electoral threshold
+
+The ceiling() function comes from dplyr and simply. rounds up
+
+```{r}
+
+threshold <- ceiling(sum(tally$n)/4 + 1)
+threshold
+
+
+```
+
+### Step 8: Determine if any candidate in the vote tally exceeds the threshold.
+
+```{r}
+winners <- tally |> 
+  filter(n >= threshold)
+
+winners
+
+if (nrow(winners) == 0) {
+  print("No winners this round") 
+} else {
+  print("We have at least one winner")
+}
+    
+```
+
+### Step 9: If there are no winners, eliminate the candidate with the fewest first place votes.
+
+In this example, i take the bottom row of the presorted tally rather than look for the minimum value explicitly. Each system deals with ties differently; in the unlikely event that two or more eliminated candidates are tied, the elimination is chosen arbitrarily here, TBH: I'm not exactly sure how Portland handles that scenario, but I'm sure it's documented somewhere.
+
+```{r}
+eliminated_candidate <- tally[nrow(tally), 1]
+
+eliminated_candidate
+```
+
+### Step 10: Run another round after filtering the eliminating candidate
+
+We execute the compression logic one more time, and repeat until three candidates have crossed the threshold. 
+
+A function (or even a recursive function) would make sense at this point.
+
+Almost all of the code shown here is reused...the filtering statement is the only differece.
+
+This code blocks run runs the code above beginning with step 6.
+
+Notice that logically automatically moves a voter's highest remaining candidate into rank_1. Once all of a voter's candidates are eliminated, the ballot is considered **exhausted**.
+
+```{r}
+
+ballot_data_round_2 <- ballot_data |> 
+  
+    pivot_longer(cols = !c(recordID, precinct), 
+                 names_to = "choice_num", values_to = "choice") |> 
+    mutate(choice_num = as.numeric(str_sub(choice_num, -1, -1))) |> 
+    
+    filter(choice != as.character(eliminated_candidate)) |> 
+    
+    group_by(recordID, precinct, choice) |> 
+      slice_min(choice_num, with_ties = FALSE) |> 
+    ungroup() |> 
+    
+    group_by(recordID, precinct) |> 
+      mutate(choice_num = rank(choice_num)) |> 
+    ungroup() |> 
+
+    pivot_wider(id_cols = c("recordID", "precinct"),
+                names_from = choice_num,
+                values_from = choice) |> 
+    relocate(recordID, precinct, rank_1 = `1`, rank_2 = `2`, rank_3 = `3`,
+           rank_4 = `4`, rank_5 = `5`, rank_6 = `6`) 
+    
+ballot_data_round_2
+
+tally_round_2 <- ballot_data_round_2 |> 
+    count(rank_1, sort = TRUE)
+tally_round_2
+    
+```
+
+We have eliminated Write-in-127 and we should expect to see those voters' second place choices adjust the totals appearing in tally_round_2. The tally above shows five ballots for Write-in-127 and the new tallies should reflect those ballots' second place choices.
+
+```{r}
+
+eliminated_candidate_votes <- ballot_data |> 
+  filter(rank_1 == as.character(eliminated_candidate)) |> 
+  select(recordID, precinct, rank_1, rank_2) 
+
+eliminated_candidate_votes
+
+eliminated_candidate_votes |> count(rank_2, sort=TRUE)
+
+```
+
+We can see that two of the five ballots are blank NA's in the rank_2 position; those ballots are now exhausted. The other three candidates should have one additional ballot.
