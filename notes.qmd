@@ -1,0 +1,23 @@
+---
+title: "Notes on Direction of the Project"
+format: html
+editor: visual
+---
+
+## Combining Mayor and Council Votes
+
+Voters for particular council candidates: their mayoral votes
+
+Voters for particular mayoral candidates: their council votes
+
+## Precincts
+
+Combinations of precincts and support for council candidates
+
+Code cleanup:
+
+Consolidate all the shell script into functions
+
+... keep going (6/10/26 14:01)
+
+Quota: make sure it handles scenario where there are not enough winners
